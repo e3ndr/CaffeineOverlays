@@ -74,13 +74,28 @@
 				});
 			}
 			
-			connect(getUrlVars()["stageId"]);
+			var stageId;
+			if (getUrlVars()["username"]) {
+				var userResponse = JSON.parse(httpGet("https://endedglory.ga/caffeine/getUser.php?user=" + getUrlVars()["username"]));
+				stageId = userResponse.user.stage_id;
+			} else {
+				stageId = getUrlVars()["stageId"];
+			}
+			connect(stageId);
 			
 			setTimeout(function() {
 				if (getUrlVars()["text"] == "light") {
 					document.getElementById("text").className += " lightText";
 				}
 			}, 1000);
+			
+			function httpGet(url) {
+				var xmlHttp = new XMLHttpRequest();
+				xmlHttp.open("GET", url, false);
+				xmlHttp.send(null);
+				return xmlHttp.responseText;
+			}
+			
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
 	</head>
