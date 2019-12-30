@@ -14,8 +14,44 @@
 			.lightText {
 				color: white;
 			}
+			
+			.purpblue {
+				color: rgb(124, 0, 255);
+			}
+			
+			.lightpurple {
+				color: rgb(161,0,253);
+			}
+			
+			.lightmagenta {
+				color: rgb(191,95,225);
+			}
+			
+			.pinky {
+				color: rgb(210,112,166);
+			}
+			
+			.heavypink {
+				color: rgb(199,62,135);
+			}
+			
+			.red {
+				color: rgb(165,32,53);
+			}
+			
+			.lightred {
+				color: rgb(192,85,102);
+			}
+			
+			.lightblue {
+				color: rgb(16,125,172);
+			}
+			
 		</style>
 		<script>
+			var colors = ["purpblue", "lightpurple", "lightmagenta", "pinky", "heavypink", "red", "lightred", "lightblue"];
+			var maxLength = 20;
+			
 			// Helpers
 			function getUrlVars() {
 				var vars = {};
@@ -24,6 +60,13 @@
 				});
 				
 				return vars;
+			}
+			
+			function httpGet(url) {
+				var xmlHttp = new XMLHttpRequest();
+				xmlHttp.open("GET", url, false);
+				xmlHttp.send(null);
+				return xmlHttp.responseText;
 			}
 			
 			function sleep(ms) {
@@ -49,30 +92,53 @@
 							var publisher = json.publisher;
 							var item = body.digital_item;
 							
-							addChat(publisher.username + ":  " + body.text);
+							addChat(publisher.username, body.text);
 							console.log(json);
 						}
 					}
 				}
 			}
 			
-			function addChat(message) {
-				var chat = document.getElementById("text").textContent.split("\n");
+			function addChat(username, message) {
+				var chat = Array.from(document.getElementById("div").childNodes);
 				
-				console.log(chat.length);
-				
-				while (chat.length > 9) {
+				while (chat.length > maxLength * 3) {
 					chat.shift();
 				}
 				
-				chat.push(message);
-				document.getElementById("text").textContent = "";
-				chat.forEach(function(msg) {
-					if (msg != "") {
-						document.getElementById("text").textContent += msg + "\n";
-					}
+				var user = document.createElement("span");
+				var msg = document.createElement("span");
+				var br = document.createElement("br");
+				
+				user.className = "InterSemiBold ";
+				user.className += colors[Math.floor(Math.random() * colors.length)];
+				msg.className = "InterSemiBold";
+				
+				if (getUrlVars()["text"] == "light") {
+					msg.className += " lightText";
+				}
+				
+				console.log(chat);
+				
+				user.textContent = username;
+				msg.textContent = "    " + message;
+				
+				chat.push(user);
+				chat.push(msg);
+				chat.push(br);
+				
+				document.getElementById("div").innerHTML = "";
+				
+				chat.forEach(function (ch) {
+					document.getElementById("div").appendChild(ch);
 				});
 			}
+			
+			
+			if (getUrlVars()["maxLength"]) {
+				maxLength = parseInt(getUrlVars()["maxLength"], 10);
+			}
+			
 			
 			var stageId;
 			if (getUrlVars()["username"]) {
@@ -83,23 +149,11 @@
 			}
 			connect(stageId);
 			
-			setTimeout(function() {
-				if (getUrlVars()["text"] == "light") {
-					document.getElementById("text").className += " lightText";
-				}
-			}, 1000);
-			
-			function httpGet(url) {
-				var xmlHttp = new XMLHttpRequest();
-				xmlHttp.open("GET", url, false);
-				xmlHttp.send(null);
-				return xmlHttp.responseText;
-			}
-			
 		</script>
 	</head>
 	
 	<body>
-		<pre class="InterSemiBold" id="text"></pre>
+		<div id="div">
+		</div>
 	</body>
 </html>

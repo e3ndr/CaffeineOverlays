@@ -19,6 +19,7 @@
 				var form = document.getElementById("form");
 				var username = form.elements[0].value;
 				var dark = form.elements[2].checked;
+				var maxLength = form.elements[3].value;
 				
 				var url = "https://e3ndr.github.io/CaffeineOverlays/chatoverlay.html?username=" + username;
 				
@@ -26,6 +27,10 @@
 					url += "&text=dark";
 				} else {
 					url += "&text=light";
+				}
+				
+				if (maxLength != "") {
+					url += "&maxLength=" + maxLength;
 				}
 				
 				window.location.href = url;
@@ -54,8 +59,9 @@
 		<div class="InterSemiBold">
 			<form id="form">
 				Username: <input type="text" value=""><br>
-				MP3 Audio Link: <input type="text" value=""><br>
+				MP3 Audio Link (Donations Overlay): <input type="text" value=""><br>
 				Dark Text: <input type="checkbox"><br>
+				Max Chat Length (Chat Overlay): <input type="text" value="10"><br>
 			</form>
 			
 			<button onclick="getChat()">Get chat overlay link</button>
