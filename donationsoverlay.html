@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			@font-face {
+				font-family: InterSemiBold;
+				src: url(fonts/Inter-SemiBold.woff2);
+			}
+			
+			.InterSemiBold {
+				font-family: InterSemiBold;
+			}
+			
+			.center {
+				margin: auto;
+				width: 60%;
+				text-align: center;
+				padding: 10px;
+			}
+			
+			img {
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				width: 20%;
+			}
+			
+			.ml7 {
+				position: relative;
+				font-weight: 900;
+				font-size: 2em;
+			}
+			
+			.ml7 .text-wrapper {
+				position: relative;
+				display: inline-block;
+				padding-bottom: 0.1em;
+				overflow: hidden;
+				font-size: 3.7em;
+			}
+			
+			.lightText {
+				color: white;
+			}
+			
+			.ml7 .letter {
+				transform-origin: 0 100%;
+				display: inline-block;
+			}
+		</style>
+		<script>
+			var audio_link = getUrlVars()["audio"];
+			var queue = [];
+			
+			// Helpers
+			function getUrlVars() {
+				var vars = {};
+				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+					vars[key] = value;
+				});
+				
+				return vars;
+			}
+			
+			function sleep(ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+			
+			// Code
+			function connect(stageId){
+				var ws = new WebSocket("wss://realtime.caffeine.tv/v2/reaper/stages/" + stageId + "/messages");
+				
+				ws.onopen = function() {
+					ws.send('{"Headers":{"Authorization":"Anonymous API","X-Client-Type":"api"}}');
+					setInterval(function() {ws.send('"HEALZ"')}, 20000);
+				}
+				
+				ws.onmessage = function(message) {
+					var message_raw = message.data;
+					if (message_raw != ("\"THANKS\"")) {
+						var json = JSON.parse(message_raw);
+						
+						if (json.type == "digital_item" && !json.hasOwnProperty("endorsement_count")) {
+							var body = json.body;
+							var publisher = json.publisher;
+							var item = body.digital_item;
+							
+							animate(body.text, "https://assets.caffeine.tv" + item.static_image_path, publisher.username);
+						
+							console.log(json);
+						}
+					}
+				}
+			}
+			
+			function animate(text, avatar, donator) {
+				queue.push(JSON.parse("{\"text\": \"" + text + "\",\"donator\": \"" + donator + "\", \"avatar\":\"" + avatar + "\"}"));
+			}
+			
+			async function loop() {
+				if (queue.length > 0) {
+					show(queue[0]);
+					
+					new Audio(audio_link).play();
+					
+					await sleep(12000);
+					
+					var letters = document.getElementsByClassName("letter");
+
+					while (letters[0]) {
+						letters[0].parentNode.removeChild(letters[0]);
+					}
+					
+					var letterSpan = document.getElementsByClassName("letters")[0];
+					letterSpan.parentNode.removeChild(letterSpan);
+					document.getElementById("donator").textContent = "";
+					
+					queue.shift();
+				}
+				
+				setTimeout(loop, 5000);
+			}
+			
+			function show(json) {
+				var textArea = document.getElementById("textArea");
+				var div = document.getElementById("donate");
+				var newText = document.createElement("span");
+				newText.className = "letters";
+				newText.textContent = json.text;
+				textArea.appendChild(newText, div.nextSibling);
+				document.getElementById("donator").textContent = json.donator;
+				document.getElementById("avatar").src = json.avatar;
+				
+				var textWrapper = document.querySelector('.ml7 .letters');
+				textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class=\"letter\">$&</span>");
+				
+				anime.timeline({loop: false})
+					.add({
+						targets: '.ml7',
+						opacity: 1,
+						duration: 4000,
+						easing: "easeOutExpo"
+					}).add({
+						targets: '.ml7 .letter',
+						translateY: ["1.1em", 0],
+						translateX: ["0.55em", 0],
+						translateZ: 0,
+						rotateZ: [180, 0],
+						duration: 750,
+						easing: "easeOutExpo",
+						delay: (el, i) => 50 * i
+					}).add({
+						targets: '.ml7',
+						opacity: 0,
+						duration: 2000,
+						easing: "easeOutExpo",
+						delay: 5000
+					});
+				
+			}
+			
+			connect(getUrlVars()["stageId"]);
+			setTimeout(loop, 2000);
+			
+			setTimeout(function() {
+				if (getUrlVars()["text"] == "light") {
+					document.getElementById("donate").className += " lightText";
+				}
+			}, 1000);
+			
+			animate("test", "", "test");
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+	</head>
+	
+	<body>
+		<h1 class="ml7 InterSemiBold center" id="donate" style="opacity: 0;">
+			<img src="" id="avatar">
+			<p id="donator"></p>
+			<span class="text-wrapper" id="textArea"></span>
+		</h1>
+	</body>
+</html>

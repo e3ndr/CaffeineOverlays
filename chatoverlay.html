@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			@font-face {
+				font-family: InterSemiBold;
+				src: url(fonts/Inter-SemiBold.woff2);
+			}
+			
+			.InterSemiBold {
+				font-family: InterSemiBold;
+			}
+			
+			.lightText {
+				color: white;
+			}
+		</style>
+		<script>
+			// Helpers
+			function getUrlVars() {
+				var vars = {};
+				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+					vars[key] = value;
+				});
+				
+				return vars;
+			}
+			
+			function sleep(ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+			
+			// Code
+			function connect(stageId){
+				var ws = new WebSocket("wss://realtime.caffeine.tv/v2/reaper/stages/" + stageId + "/messages");
+				
+				ws.onopen = function() {
+					ws.send('{"Headers":{"Authorization":"Anonymous API","X-Client-Type":"api"}}');
+					setInterval(function() {ws.send('"HEALZ"')}, 20000);
+				}
+				
+				ws.onmessage = function(message) {
+					var message_raw = message.data;
+					if (message_raw != ("\"THANKS\"")) {
+						var json = JSON.parse(message_raw);
+						
+						if (json.type == "reaction" && !json.hasOwnProperty("endorsement_count")) {
+							var body = json.body;
+							var publisher = json.publisher;
+							var item = body.digital_item;
+							
+							addChat(publisher.username + ":  " + body.text);
+							console.log(json);
+						}
+					}
+				}
+			}
+			
+			function addChat(message) {
+				var chat = document.getElementById("text").textContent.split("\n");
+				
+				console.log(chat.length);
+				
+				while (chat.length > 9) {
+					chat.shift();
+				}
+				
+				chat.push(message);
+				document.getElementById("text").textContent = "";
+				chat.forEach(function(msg) {
+					if (msg != "") {
+						document.getElementById("text").textContent += msg + "\n";
+					}
+				});
+			}
+			
+			connect(getUrlVars()["stageId"]);
+			
+			setTimeout(function() {
+				if (getUrlVars()["text"] == "light") {
+					document.getElementById("text").className += " lightText";
+				}
+			}, 1000);
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+	</head>
+	
+	<body>
+		<pre class="InterSemiBold" id="text"></pre>
+	</body>
+</html>
