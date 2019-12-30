@@ -18,10 +18,9 @@
 			function getChat() {
 				var form = document.getElementById("form");
 				var username = form.elements[0].value;
-				var audio = form.elements[1].value;
 				var dark = form.elements[2].checked;
 				
-				var url = "https://e3ndr.github.io/CaffeineOverlays/chatoverlay.html?username=" + username + "&audio=" + audio;
+				var url = "https://e3ndr.github.io/CaffeineOverlays/chatoverlay.html?username=" + username;
 				
 				if (dark) {
 					url += "&text=dark";
