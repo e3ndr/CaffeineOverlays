@@ -177,6 +177,13 @@
 				}
 			}, 1000);
 			
+			function httpGet(url) {
+				var xmlHttp = new XMLHttpRequest();
+				xmlHttp.open("GET", url, false);
+				xmlHttp.send(null);
+				return xmlHttp.responseText;
+			}
+			
 			animate("test", "", "test");
 		</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>

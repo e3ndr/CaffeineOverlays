@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Generate overlay links</title>
+		<style>
+			@font-face {
+				font-family: InterSemiBold;
+				src: url(fonts/Inter-SemiBold.woff2);
+			}
+			
+			.InterSemiBold {
+				font-family: InterSemiBold;
+			}
+			
+		</style>
+		
+		<script>
+			function getChat() {
+				var form = document.getElementById("form");
+				var username = form.elements[0].value;
+				var audio = form.elements[1].value;
+				var dark = form.elements[2].checked;
+				
+				var url = "https://e3ndr.github.io/CaffeineOverlays/chatoverlay.html?username=" + username + "&audio=" + audio;
+				
+				if (dark) {
+					url +="&text=dark";
+				} else {
+					url +="&text=light";
+				}
+				
+				window.location.href = url;
+			}
+			
+			function getDonations() {
+				var form = document.getElementById("form");
+				var username = form.elements[0].value;
+				var audio = form.elements[1].value;
+				var dark = form.elements[2].checked;
+				
+				var url = "https://e3ndr.github.io/CaffeineOverlays/donationsoverlay.html?username=" + username + "&audio=" + audio;
+				
+				if (dark) {
+					url +="&text=dark";
+				} else {
+					url +="&text=light";
+				}
+				
+				window.location.href = url;
+			}
+		</script>
+	</head>
+	
+	<body>
+		<div class="InterSemiBold">
+			<form id="form">
+				Username: <input type="text" value=""><br>
+				MP3 Audio Link: <input type="text" value=""><br>
+				Dark Text: <input type="checkbox"><br>
+			</form>
+			
+			<button onclick="getChat()">Get chat overlay link</button>
+			<button onclick="getDonations()">Get donations overlay link</button>
+			
+		</div>
+	</body>
+</html>
