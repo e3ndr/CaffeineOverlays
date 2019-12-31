@@ -51,6 +51,8 @@
 		<script>
 			var audio_link = getUrlVars()["audio"];
 			var queue = [];
+			var train = 0;
+			var last = 0;
 			
 			// Helpers
 			function getUrlVars() {
@@ -101,7 +103,16 @@
 				if (queue.length > 0) {
 					show(queue[0]);
 					
-					new Audio(audio_link).play();
+					if (train > 4) {
+						var audio = getUrlVars()["train"];
+						if (audio) {
+							new Audio(audio).play();
+						}
+					} else {
+						new Audio(audio_link).play();
+					}
+					
+					console.log("train: " + train + " & " + last);
 					
 					await sleep(12000);
 					
@@ -157,6 +168,16 @@
 						delay: 5000
 					});
 				
+				
+				var currentMillis = Date.now();
+				
+				if (last + 60000 > currentMillis) {
+					train += 1;
+				} else {
+					train = 0;
+				}
+				
+				last = currentMillis;
 			}
 			
 			
