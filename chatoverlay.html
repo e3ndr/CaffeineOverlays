@@ -93,7 +93,7 @@
 							var item = body.digital_item;
 							
 							addChat(publisher.username, body.text);
-							console.log(json);
+							// console.log(json);
 						}
 					}
 				}
@@ -101,14 +101,11 @@
 			
 			function addChat(username, message) {
 				var chat = Array.from(document.getElementById("div").childNodes);
-				
-				while (chat.length > maxLength * 3) {
-					chat.shift();
-				}
-				
 				var user = document.createElement("span");
 				var msg = document.createElement("span");
 				var br = document.createElement("br");
+				var div = document.createElement("div");
+				var lines = Math.floor(((username.length + message.length + 1) * 9) / 300) + 1;
 				
 				user.className = "InterSemiBold ";
 				user.className += colors[Math.floor(Math.random() * colors.length)];
@@ -118,27 +115,37 @@
 					msg.className += " lightText";
 				}
 				
-				console.log(chat);
+				// console.log(chat);
+				// console.log(lines);
 				
 				user.textContent = username;
-				msg.textContent = "    " + message;
+				msg.textContent = " " + message;
 				
-				chat.push(user);
-				chat.push(msg);
-				chat.push(br);
+				div.appendChild(user);
+				div.appendChild(msg);
+				div.appendChild(br);
+				div.setAttribute("data-lines", lines);
+				chat.push(div);
+				
+				var displayed_lines = 0;
+				
+				Array.from(chat).forEach(function(item) {
+					displayed_lines += parseInt(item.getAttribute("data-lines"));
+				});
+				
+				while (displayed_lines >= maxLength) {
+					displayed_lines -= parseInt(chat.shift().getAttribute("data-lines"));
+				}
 				
 				document.getElementById("div").innerHTML = "";
-				
-				chat.forEach(function (ch) {
+				chat.forEach(function(ch) {
 					document.getElementById("div").appendChild(ch);
 				});
 			}
 			
-			
 			if (getUrlVars()["maxLength"]) {
 				maxLength = parseInt(getUrlVars()["maxLength"], 10);
 			}
-			
 			
 			var stageId;
 			if (getUrlVars()["username"]) {
@@ -153,7 +160,6 @@
 	</head>
 	
 	<body>
-		<div id="div">
-		</div>
+		<div id="div"></div>
 	</body>
 </html>
