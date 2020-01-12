@@ -15,6 +15,12 @@
 				color: white;
 			}
 			
+			body {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+			}
+			
 			.purpblue {
 				color: rgb(124, 0, 255);
 			}
@@ -105,7 +111,11 @@
 				var msg = document.createElement("span");
 				var br = document.createElement("br");
 				var div = document.createElement("div");
-				var lines = Math.floor(((username.length + message.length + 1) * 9) / 300) + 1;
+				
+				
+				while (chat.length >= maxLength) {
+					chat.shift();
+				}
 				
 				user.className = "InterSemiBold ";
 				user.className += colors[Math.floor(Math.random() * colors.length)];
@@ -124,18 +134,9 @@
 				div.appendChild(user);
 				div.appendChild(msg);
 				div.appendChild(br);
-				div.setAttribute("data-lines", lines);
 				chat.push(div);
 				
 				var displayed_lines = 0;
-				
-				Array.from(chat).forEach(function(item) {
-					displayed_lines += parseInt(item.getAttribute("data-lines"));
-				});
-				
-				while (displayed_lines >= maxLength) {
-					displayed_lines -= parseInt(chat.shift().getAttribute("data-lines"));
-				}
 				
 				document.getElementById("div").innerHTML = "";
 				chat.forEach(function(ch) {
