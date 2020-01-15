@@ -120,6 +120,7 @@
 				user.className = "InterSemiBold ";
 				user.className += colors[Math.floor(Math.random() * colors.length)];
 				msg.className = "InterSemiBold";
+				div.className = "chat_box";
 				
 				if (getUrlVars()["text"] == "light") {
 					msg.className += " lightText";
@@ -150,7 +151,7 @@
 			
 			var stageId;
 			if (getUrlVars()["username"]) {
-				var userResponse = JSON.parse(httpGet("https://endedglory.ga/caffeine/getUser.php?user=" + getUrlVars()["username"]));
+				var userResponse = JSON.parse(httpGet("https://static.casterlabs.co/api/getCaffeineUser.php?user=" + getUrlVars()["username"]));
 				stageId = userResponse.user.stage_id;
 			} else {
 				stageId = getUrlVars()["stageId"];

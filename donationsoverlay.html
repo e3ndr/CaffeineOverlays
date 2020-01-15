@@ -101,16 +101,6 @@
 			
 			async function loop() {
 				if (queue.length > 0) {
-					var width = screen.width;
-					var text_length = queue[0].text.length + 1;
-					var text_size = width / text_length;
-					var donator_length = queue[0].donator.length + 1;
-					var donator_size = Math.min(width / donator_length, 50);
-					console.log("text size: " + text_size + "px");
-					console.log("donator size: " + donator_size + "px");
-					document.getElementById("textArea").style.fontSize = text_size + "px";
-					document.getElementById("donator").style.fontSize = donator_size + "px";
-					
 					show(queue[0]);
 					
 					if (train > 4) {
@@ -124,7 +114,7 @@
 					
 					console.log("train: " + train + " & " + last);
 					
-					await sleep(15000);
+					await sleep(12000);
 					
 					var letters = document.getElementsByClassName("letter");
 
@@ -162,9 +152,18 @@
 						duration: 4000,
 						easing: "easeOutExpo"
 					}).add({
+						targets: '.ml7 .letter',
+						translateY: ["1.1em", 0],
+						translateX: ["0.55em", 0],
+						translateZ: 0,
+						rotateZ: [180, 0],
+						duration: 750,
+						easing: "easeOutExpo",
+						delay: (el, i) => 50 * i
+					}).add({
 						targets: '.ml7',
 						opacity: 0,
-						duration: 4000,
+						duration: 2000,
 						easing: "easeOutExpo",
 						delay: 5000
 					});
@@ -172,7 +171,7 @@
 				
 				var currentMillis = Date.now();
 				
-				if (last + 60000 > currentMillis) {
+				if (last + 120000 > currentMillis) {
 					train += 1;
 				} else {
 					train = 0;
@@ -181,12 +180,10 @@
 				last = currentMillis;
 			}
 			
-			console.log("Donations Overlay v1.1.12");
-			console.log("");
 			
 			var stageId;
 			if (getUrlVars()["username"]) {
-				var userResponse = JSON.parse(httpGet("https://endedglory.ga/caffeine/getUser.php?user=" + getUrlVars()["username"]));
+				var userResponse = JSON.parse(httpGet("https://static.casterlabs.co/api/getCaffeineUser.php?user=" + getUrlVars()["username"]));
 				stageId = userResponse.user.stage_id;
 			} else {
 				stageId = getUrlVars()["stageId"];
